@@ -1,0 +1,18 @@
+{
+	"compilerOptions": {
+		"target": "ES2020", // Modern JS features
+		"module": "ESNext", // Enable native import/export
+		"moduleResolution": "Node", // Resolve modules like Node.js does
+		"esModuleInterop": true, // Allow default imports from CommonJS
+		"forceConsistentCasingInFileNames": true, // Avoid file casing bugs
+		"strict": true, // Enable all strict type-checking
+		"skipLibCheck": true, // Skip checking .d.ts files (faster)
+		"outDir": "dist", // Output directory for compiled files
+		"rootDir": "src", // Root directory of your source code
+		"resolveJsonModule": true, // Allow importing .json files
+		"allowSyntheticDefaultImports": true, // Allow default imports even if no default export exists
+		"noEmit": false // Set to true if you only use ts-node
+	},
+	"include": ["src/**/*"],
+	"exclude": ["node_modules", "dist"]
+}
