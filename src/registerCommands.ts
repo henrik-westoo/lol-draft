@@ -2,11 +2,20 @@ import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import dotenv from "dotenv";
 dotenv.config();
 
-const commands = [
-	new SlashCommandBuilder()
-		.setName("startdraft")
-		.setDescription("Start a League of Legends draft"),
-].map((command) => command.toJSON());
+const startDraftCommand = new SlashCommandBuilder()
+	.setName("startdraft")
+	.setDescription("Start a League of Legends draft with 10 players");
+
+for (let i = 0; i < 10; i++) {
+	startDraftCommand.addUserOption((option) =>
+		option
+			.setName(`player${i + 1}`)
+			.setDescription(`Player ${i + 1}`)
+			.setRequired(true),
+	);
+}
+
+const commands = [startDraftCommand].map((command) => command.toJSON());
 
 const rest = new REST({ version: "10" }).setToken(
 	// biome-ignore lint/style/noNonNullAssertion: <explanation>
