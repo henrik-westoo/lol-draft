@@ -74,6 +74,16 @@ export class DraftManager {
 		await this.redisBridge.saveDraft(draft);
 		return draft;
 	}
+
+	public async cancelDraft(guildId: string, channelId: string) {
+		const draft = await this.redisBridge.getDraft(guildId, channelId);
+		if (!draft) return "draft-not-found";
+		if (draft.phase !== "picking") return "draft-not-in-progress";
+
+		draft.phase = "cancelled";
+		await this.redisBridge.saveDraft(draft);
+		return draft;
+	}
 }
 
 export class RedisBridge {

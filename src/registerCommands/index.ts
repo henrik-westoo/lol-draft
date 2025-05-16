@@ -1,5 +1,6 @@
 import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const startDraftCommand = new SlashCommandBuilder()
@@ -15,10 +16,15 @@ for (let i = 0; i < 10; i++) {
 	);
 }
 
-const commands = [startDraftCommand].map((command) => command.toJSON());
+const cancelDraftCommand = new SlashCommandBuilder()
+	.setName("canceldraft")
+	.setDescription("Cancel the current draft");
+
+const commands = [startDraftCommand, cancelDraftCommand].map((command) =>
+	command.toJSON(),
+);
 
 const rest = new REST({ version: "10" }).setToken(
-	// biome-ignore lint/style/noNonNullAssertion: <explanation>
 	process.env.DISCORD_BOT_TOKEN!,
 );
 
@@ -26,7 +32,6 @@ const rest = new REST({ version: "10" }).setToken(
 	try {
 		console.log("🔄 Refreshing application (/) commands...");
 
-		// biome-ignore lint/style/noNonNullAssertion: <explanation>
 		await rest.put(Routes.applicationCommands(process.env.DISCORD_APP_ID!), {
 			body: commands,
 		});

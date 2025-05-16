@@ -10,8 +10,8 @@
 		"rebuild": "npm run clean && npm run build",
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "node dist/bot.js",
-		"dev": "nodemon",
-		"register": "node --loader ts-node/esm src/registerCommands.ts"
+		"dev": "docker-compose up -d && nodemon",
+		"register": "node --loader ts-node/esm src/registerCommands/index.ts"
 	},
 	"keywords": [],
 	"author": "",

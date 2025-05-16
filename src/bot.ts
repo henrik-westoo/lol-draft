@@ -2,6 +2,7 @@ import { Client, Events, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 import { redis } from "./redis.js";
 import { DraftManager, RedisBridge } from "./draft/DraftManager.js";
+import { COMMANDS } from "./commands/index.js";
 
 dotenv.config();
 
@@ -20,17 +21,22 @@ client.once(Events.ClientReady, (readyClient) => {
 client.on(Events.InteractionCreate, async (interaction) => {
 	if (!interaction.isChatInputCommand()) return;
 
-	const { commandName } = interaction;
+	switch (interaction.commandName) {
+		case "startdraft":
+			return COMMANDS.startDraft(
+				interaction,
+				new DraftManager(new RedisBridge(redis)),
+			);
 
-	if (commandName === "startdraft") {
-		await redis.set("test-key", "hello");
-		const value = await redis.get("test-key");
-		console.log(value); // Should print: hello
-		await interaction.reply("🛠 Draft setup coming soon!");
-		// Later: initialize DraftManager here
-
-		const draftManager = new DraftManager(new RedisBridge(redis));
-		console.log("players: ", interaction.options.data);
+		case "canceldraft":
+			return COMMANDS.cancelDraft(
+				interaction,
+				new DraftManager(new RedisBridge(redis)),
+			);
+		default:
+			return interaction.reply({
+				content: `Unknown command: ${interaction.commandName}`,
+			});
 	}
 });
 
