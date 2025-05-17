@@ -1,5 +1,6 @@
 import type { ButtonInteraction, CommandInteraction } from "discord.js";
 import type { DraftManager } from "../../draft/DraftManager";
+import { buildDraftEmbed, buildPlayerButtons } from "../../ui/ui.js";
 
 export const pickPlayer = async (
 	interaction: ButtonInteraction,
@@ -28,9 +29,9 @@ export const pickPlayer = async (
 		}
 	}
 
-	// await interaction.update({
-	// 	content: `<@${updatedDraft!.turnOrder[updatedDraft!.currentTurnIndex] || "all done"}>, your turn!`,
-	// 	embeds: [buildDraftEmbed(updatedDraft!)],
-	// 	components: buildPlayerButtons(updatedDraft!.availablePlayers),
-	// });
+	await interaction.update({
+		content: `<@${pickPlayerResponse!.turnOrder[pickPlayerResponse!.currentTurnIndex] || "all done"}>, your turn!`,
+		embeds: [buildDraftEmbed(pickPlayerResponse!)],
+		components: buildPlayerButtons(pickPlayerResponse!.availablePlayers),
+	});
 };
