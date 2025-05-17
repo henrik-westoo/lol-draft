@@ -11,6 +11,10 @@ dotenv.config();
 // import redis after setting up dotenv
 import { redis } from "./redis.js";
 
+redis.ping().then((res) => {
+	console.log("Redis ping:", res);
+});
+
 const client = new Client({
 	intents: [
 		GatewayIntentBits.Guilds, // Required for slash commands and interactions
