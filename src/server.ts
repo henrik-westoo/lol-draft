@@ -1,6 +1,5 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
-import { redis } from "./redis.js";
 import { DraftManager } from "./draft/DraftManager.js";
 import { CHAT_INPUT_COMMANDS } from "./interactions/chat-input/index.js";
 import { readButtonId } from "./utils/button-id.js";
@@ -9,6 +8,8 @@ import { BUTTON_COMMANDS } from "./interactions/button/index.js";
 import { registerCommands } from "./registerCommands.js";
 
 dotenv.config();
+// import redis after setting up dotenv
+import { redis } from "./redis.js";
 
 const client = new Client({
 	intents: [
