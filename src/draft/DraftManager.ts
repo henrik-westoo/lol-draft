@@ -1,7 +1,16 @@
 import { PLAYER_COUNT } from "../constants.js";
-import type { redis } from "../redis.js";
 import { randomUUID } from "node:crypto";
 import type { Player, Draft } from "../types.js";
+import type { RedisBridge } from "../services/redis-bridge.js";
+
+type InitDraftArgs = {
+	players: Player[];
+};
+
+type PickPlayerArgs = {
+	captainId: string;
+	playerId: string;
+};
 
 export class DraftManager {
 	constructor(
@@ -11,8 +20,6 @@ export class DraftManager {
 			channelId: string;
 		},
 	) {}
-
-	private draftKey = `draft:${this.connect.guildId}:${this.connect.channelId}`;
 
 	public async initDraft({ players }: InitDraftArgs) {
 		const exists = await this.redisBridge.getDraft(this.connect);
@@ -90,43 +97,3 @@ export class DraftManager {
 		return draft;
 	}
 }
-
-export class RedisBridge {
-	constructor(private redisInstance: typeof redis) {}
-	public async cancelDraft(guildId: string, channelId: string) {
-		await this.redisInstance.del(getDraftKey(guildId, channelId));
-	}
-
-	public async getDraft({
-		channelId,
-		guildId,
-	}: { guildId: string; channelId: string }) {
-		const raw = await this.redisInstance.get(getDraftKey(guildId, channelId));
-		return raw ? (JSON.parse(raw) as Draft) : null;
-	}
-
-	public async saveDraft(draft: Draft) {
-		console.log("Saving draft", JSON.stringify(draft, null, 2));
-
-		await this.redisInstance.set(
-			getDraftKey(draft.guildId, draft.channelId),
-			JSON.stringify(draft),
-			"EX",
-			3600,
-		);
-
-		return draft;
-	}
-}
-
-const getDraftKey = (guildId: string, channelId: string) =>
-	`draft:${guildId}:${channelId}`;
-
-type InitDraftArgs = {
-	players: Player[];
-};
-
-type PickPlayerArgs = {
-	captainId: string;
-	playerId: string;
-};

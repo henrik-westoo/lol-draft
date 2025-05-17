@@ -1,1 +1,1 @@
-export const PLAYER_COUNT = 4;
+export const PLAYER_COUNT = 3;

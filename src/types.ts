@@ -1,6 +1,6 @@
 export type Player = {
 	id: string;
-	username: string;
+	name: string;
 	mainRole: string;
 	offRole: string;
 };

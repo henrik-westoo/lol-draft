@@ -2,5 +2,5 @@
 	"watch": ["src"],
 	"ext": "ts",
 	"ignore": ["dist"],
-	"exec": "node --loader ts-node/esm src/bot.ts"
+	"exec": "node --loader ts-node/esm src/server.ts"
 }

@@ -1,5 +1,17 @@
-import { EmbedBuilder } from "discord.js";
-import type { Draft } from "../types";
+import {
+	ActionRowBuilder,
+	ButtonBuilder,
+	ButtonStyle,
+	EmbedBuilder,
+} from "discord.js";
+import type { Draft, Player } from "../types";
+import { createButtonId } from "../utils/button-id.js";
+
+const formatPlayer = (player: {
+	name: string;
+	mainRole: string;
+	offRole: string;
+}) => `• **${player.name}** — Main: ${player.mainRole}, Off: ${player.offRole}`;
 
 export function buildDraftEmbed(draft: Draft) {
 	const embed = new EmbedBuilder()
@@ -9,20 +21,13 @@ export function buildDraftEmbed(draft: Draft) {
 	const teamA = draft.teams[draft.captains[0].id] || [];
 	const teamB = draft.teams[draft.captains[1].id] || [];
 
-	const formatPlayer = (player: {
-		username: string;
-		mainRole: string;
-		offRole: string;
-	}) =>
-		`• **${player.username}** — Main: ${player.mainRole}, Off: ${player.offRole}`;
-
 	const teamAList = [
-		`👑 **Captain**: ${draft.captains[0].username}`,
+		`👑 **Captain**: ${draft.captains[0].name}`,
 		...teamA.map(formatPlayer),
 	].join("\n");
 
 	const teamBList = [
-		`👑 **Captain**: ${draft.captains[1].username}`,
+		`👑 **Captain**: ${draft.captains[1].name}`,
 		...teamB.map(formatPlayer),
 	].join("\n");
 
@@ -51,9 +56,6 @@ export function buildDraftEmbed(draft: Draft) {
 	return embed;
 }
 
-import { ButtonBuilder, ActionRowBuilder, ButtonStyle } from "discord.js";
-import type { Player } from "../types.js";
-
 export function buildPlayerButtons(players: Player[]) {
 	const rows: ActionRowBuilder<ButtonBuilder>[] = [];
 
@@ -64,8 +66,8 @@ export function buildPlayerButtons(players: Player[]) {
 		for (const player of chunk) {
 			row.addComponents(
 				new ButtonBuilder()
-					.setCustomId(`pick_${player.id}`)
-					.setLabel(player.username)
+					.setCustomId(createButtonId("pick", player.id))
+					.setLabel(player.name)
 					.setStyle(ButtonStyle.Primary),
 			);
 		}
