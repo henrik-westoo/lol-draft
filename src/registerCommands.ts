@@ -31,7 +31,7 @@ const rest = new REST({ version: "10" }).setToken(
 	process.env.DISCORD_BOT_TOKEN!,
 );
 
-(async () => {
+export const registerCommands = async () => {
 	try {
 		console.log("🔄 Refreshing application (/) commands...");
 
@@ -43,4 +43,4 @@ const rest = new REST({ version: "10" }).setToken(
 	} catch (error) {
 		console.error(error);
 	}
-})();
+};

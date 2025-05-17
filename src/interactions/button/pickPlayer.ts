@@ -1,4 +1,4 @@
-import type { ButtonInteraction, CommandInteraction } from "discord.js";
+import type { ButtonInteraction } from "discord.js";
 import type { DraftManager } from "../../draft/DraftManager";
 import { buildDraftEmbed, buildPlayerButtons } from "../../ui/ui.js";
 

@@ -1,0 +1,20 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:latest
+    container_name: donger-draft-redis
+    ports:
+      - "6379:6379"
+
+  bot:
+    build:
+      context: ..
+      dockerfile: docker/bot-dockerfile
+    container_name: donger-draft-bot
+    depends_on:
+      - redis
+    environment:
+      - DISCORD_BOT_TOKEN=${DISCORD_BOT_TOKEN}
+      - DISCORD_APP_ID=${DISCORD_APP_ID}
+      - DISCORD_PUBLIC_KEY=${DISCORD_PUBLIC_KEY}
+    restart: unless-stopped
