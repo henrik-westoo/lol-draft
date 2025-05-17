@@ -29,7 +29,7 @@ export const pickPlayer = async (
 		}
 	}
 
-	await interaction.update({
+	return interaction.update({
 		content: `<@${pickPlayerResponse!.turnOrder[pickPlayerResponse!.currentTurnIndex] || "all done"}>, your turn!`,
 		embeds: [buildDraftEmbed(pickPlayerResponse!)],
 		components: buildPlayerButtons(pickPlayerResponse!.availablePlayers),

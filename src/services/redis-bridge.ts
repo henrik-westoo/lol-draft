@@ -1,15 +1,14 @@
 import type { redis } from "../redis";
 import type { Draft } from "../types";
 
+// 24 hrs
+const ttl = 86400 as const;
+
 export class RedisBridge {
 	constructor(private redisInstance: typeof redis) {}
 
 	private getDraftKey(guildId: string, channelId: string) {
 		return `draft:${guildId}:${channelId}`;
-	}
-
-	public async cancelDraft(guildId: string, channelId: string) {
-		await this.redisInstance.del(this.getDraftKey(guildId, channelId));
 	}
 
 	public async getDraft({
@@ -29,7 +28,7 @@ export class RedisBridge {
 			this.getDraftKey(draft.guildId, draft.channelId),
 			JSON.stringify(draft),
 			"EX",
-			3600,
+			ttl,
 		);
 
 		return draft;

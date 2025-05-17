@@ -27,6 +27,8 @@ export class DraftManager {
 			return "draft-already-in-progress";
 
 		if (players.length < PLAYER_COUNT) return "not-enough-players";
+		if (new Set(players.map((p) => p.id)).size !== players.length)
+			return "duplicate-players";
 
 		// randomly select captains
 		const shuffled = [...players].sort(() => Math.random() - 0.5);

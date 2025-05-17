@@ -9,9 +9,7 @@ import { createButtonId } from "../utils/button-id.js";
 
 const formatPlayer = (player: {
 	name: string;
-	mainRole: string;
-	offRole: string;
-}) => `• **${player.name}** — Main: ${player.mainRole}, Off: ${player.offRole}`;
+}) => `• **${player.name}**`;
 
 export function buildDraftEmbed(draft: Draft) {
 	const embed = new EmbedBuilder()

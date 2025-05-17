@@ -1,8 +1,6 @@
 export type Player = {
 	id: string;
 	name: string;
-	mainRole: string;
-	offRole: string;
 };
 
 export type Draft = {
