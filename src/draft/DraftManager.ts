@@ -1,7 +1,7 @@
 import { PLAYER_COUNT } from "../constants.js";
 import { randomUUID } from "node:crypto";
 import type { Player, Draft } from "../types.js";
-import type { RedisBridge } from "../services/redis-bridge.js";
+import type { DraftRepository } from "../repositories/draft-repository.js";
 
 type InitDraftArgs = {
 	players: Player[];
@@ -14,7 +14,7 @@ type PickPlayerArgs = {
 
 export class DraftManager {
 	constructor(
-		private redisBridge: RedisBridge,
+		private draftRepository: DraftRepository,
 		private connect: {
 			guildId: string;
 			channelId: string;
@@ -22,7 +22,7 @@ export class DraftManager {
 	) {}
 
 	public async initDraft({ players }: InitDraftArgs) {
-		const exists = await this.redisBridge.getDraft(this.connect);
+		const exists = await this.draftRepository.get(this.connect);
 		if (exists && exists.phase === "picking")
 			return "draft-already-in-progress";
 
@@ -60,11 +60,11 @@ export class DraftManager {
 			phase: "picking",
 		};
 
-		return this.redisBridge.saveDraft(draft);
+		return this.draftRepository.save(draft);
 	}
 
 	public async pickPlayer({ captainId, playerId }: PickPlayerArgs) {
-		const draft = await this.redisBridge.getDraft(this.connect);
+		const draft = await this.draftRepository.get(this.connect);
 		if (!draft) return "draft-not-found";
 		if (draft.phase !== "picking") return "draft-not-in-progress";
 
@@ -85,17 +85,17 @@ export class DraftManager {
 			draft.phase = "complete";
 		}
 
-		await this.redisBridge.saveDraft(draft);
+		await this.draftRepository.save(draft);
 		return draft;
 	}
 
 	public async cancelDraft() {
-		const draft = await this.redisBridge.getDraft(this.connect);
+		const draft = await this.draftRepository.get(this.connect);
 		if (!draft) return "draft-not-found";
 		if (draft.phase !== "picking") return "draft-not-in-progress";
 
 		draft.phase = "cancelled";
-		await this.redisBridge.saveDraft(draft);
+		await this.draftRepository.save(draft);
 		return draft;
 	}
 }

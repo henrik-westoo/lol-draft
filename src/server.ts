@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import { DraftManager } from "./draft/DraftManager.js";
 import { CHAT_INPUT_COMMANDS } from "./interactions/chat-input/index.js";
 import { readButtonId } from "./utils/button-id.js";
-import { RedisBridge } from "./services/redis-bridge.js";
+import { DraftRepository } from "./repositories/draft-repository.js";
 import { BUTTON_COMMANDS } from "./interactions/button/index.js";
 import { registerCommands } from "./registerCommands.js";
 
@@ -43,7 +43,7 @@ client.on("interactionCreate", async (interaction) => {
 			content: "This command can only be used in a server.",
 		});
 
-	const draftManager = new DraftManager(new RedisBridge(redis), {
+	const draftManager = new DraftManager(new DraftRepository(redis), {
 		channelId: interaction.channelId,
 		guildId: interaction.guildId,
 	});
