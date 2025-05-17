@@ -28,7 +28,8 @@ export const pickPlayer = async (
 				});
 			case "invalid-captain-turn":
 				return interaction.reply({
-					content: "❌ It's not your turn.",
+					content:
+						"❌ Invalid action. Either you are not the captain or it is not your turn.",
 				});
 		}
 	}
