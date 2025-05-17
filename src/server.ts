@@ -49,6 +49,7 @@ client.on("interactionCreate", async (interaction) => {
 	});
 
 	if (interaction.isChatInputCommand()) {
+		console.log(`📜 Command: ${interaction.commandName}`);
 		switch (interaction.commandName) {
 			case "startdraft":
 				return CHAT_INPUT_COMMANDS.startDraft(interaction, draftManager);
