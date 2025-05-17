@@ -49,7 +49,9 @@ client.on("interactionCreate", async (interaction) => {
 	});
 
 	if (interaction.isChatInputCommand()) {
-		console.log(`📜 Command: ${interaction.commandName}`);
+		console.log(
+			`📜 Chat command: ${interaction.commandName}, issued by ${interaction.user.globalName}`,
+		);
 		switch (interaction.commandName) {
 			case "startdraft":
 				return CHAT_INPUT_COMMANDS.startDraft(interaction, draftManager);
@@ -63,6 +65,10 @@ client.on("interactionCreate", async (interaction) => {
 	}
 	if (interaction.isButton()) {
 		const { prefix, id } = readButtonId(interaction.customId);
+
+		console.log(
+			`🔘 Button command: ${prefix}, issued by ${interaction.user.globalName}`,
+		);
 
 		switch (prefix) {
 			case "pick":
