@@ -1,5 +1,5 @@
 import type { ButtonInteraction } from "discord.js";
-import type { DraftManager } from "../../draft/DraftManager";
+import type { DraftManager } from "../../services/draft-manager";
 import { buildDraftEmbed, buildPlayerButtons } from "../../ui/ui.js";
 
 export const pickPlayer = async (

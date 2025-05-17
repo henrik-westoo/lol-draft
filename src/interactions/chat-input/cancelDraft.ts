@@ -1,5 +1,5 @@
 import type { CommandInteraction } from "discord.js";
-import type { DraftManager } from "../../draft/DraftManager";
+import type { DraftManager } from "../../services/draft-manager";
 
 export const cancelDraft = async (
 	interaction: CommandInteraction,

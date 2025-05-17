@@ -1,6 +1,6 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
-import { DraftManager } from "./draft/DraftManager.js";
+import { DraftManager } from "./services/draft-manager.js";
 import { CHAT_INPUT_COMMANDS } from "./interactions/chat-input/index.js";
 import { readButtonId } from "./utils/button-id.js";
 import { DraftRepository } from "./repositories/draft-repository.js";

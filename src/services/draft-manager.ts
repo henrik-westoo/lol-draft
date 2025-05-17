@@ -1,7 +1,7 @@
 import { PLAYER_COUNT } from "../constants.js";
 import { randomUUID } from "node:crypto";
 import type { Player, Draft } from "../types.js";
-import type { DraftRepository } from "../repositories/draft-repository.js";
+import type { IDraftRepository } from "../repositories/draft-repository.js";
 
 type InitDraftArgs = {
 	players: Player[];
@@ -14,7 +14,7 @@ type PickPlayerArgs = {
 
 export class DraftManager {
 	constructor(
-		private draftRepository: DraftRepository,
+		private draftRepository: IDraftRepository,
 		private connect: {
 			guildId: string;
 			channelId: string;
