@@ -13,10 +13,7 @@ export const cancelDraft = async (
 
 	await interaction.reply("Cancelling draft...");
 
-	const cancelDraftResponse = await draftManager.cancelDraft(
-		interaction.guildId,
-		interaction.channelId,
-	);
+	const cancelDraftResponse = await draftManager.cancelDraft();
 
 	if (typeof cancelDraftResponse === "string") {
 		return interaction.editReply(cancelDraftResponse);

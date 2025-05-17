@@ -1,5 +1,6 @@
 import type { CommandInteraction } from "discord.js";
 import type { DraftManager } from "../draft/DraftManager";
+import { buildDraftEmbed, buildPlayerButtons } from "../ui/ui.js";
 
 export const startDraft = async (
 	interaction: CommandInteraction,
@@ -13,28 +14,34 @@ export const startDraft = async (
 
 	await interaction.reply("Starting draft...");
 
-	console.log("players: ", interaction.options.data);
-
 	const initDraftResponse = await draftManager.initDraft({
-		channelId: interaction.channelId,
-		players: interaction.options.data.map((player) => {
+		players: interaction.options.data.map((option) => {
+			console.log(option);
 			return {
-				id: player.value!.toString(),
-				username: player.name,
+				id: option.user!.id,
+				username: option.user!.globalName!,
 				mainRole: "jungle",
 				offRole: "top",
 			};
 		}),
-		guildId: interaction.guildId,
 	});
 
 	if (typeof initDraftResponse === "string") {
 		return interaction.editReply(initDraftResponse);
 	}
 
-	return interaction.editReply(
-		`Draft started! Players: ${initDraftResponse.players
-			.map((player) => player.username)
-			.join(", ")}`,
-	);
+	await interaction.editReply({
+		embeds: [buildDraftEmbed(initDraftResponse)],
+		content: `<@${initDraftResponse.turnOrder[initDraftResponse.currentTurnIndex]}>, your turn to pick!`,
+		components: buildPlayerButtons([
+			{ id: "1", username: "Player 1", mainRole: "jungle", offRole: "top" },
+			{ id: "2", username: "Player 2", mainRole: "mid", offRole: "adc" },
+			{ id: "3", username: "Player 3", mainRole: "support", offRole: "top" },
+			{ id: "4", username: "Player 4", mainRole: "adc", offRole: "jungle" },
+			{ id: "5", username: "Player 5", mainRole: "top", offRole: "mid" },
+			{ id: "6", username: "Player 6", mainRole: "mid", offRole: "support" },
+			{ id: "7", username: "Player 7", mainRole: "support", offRole: "adc" },
+			{ id: "8", username: "Player 8", mainRole: "top", offRole: "jungle" },
+		]),
+	});
 };

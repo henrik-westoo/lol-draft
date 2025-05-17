@@ -1,13 +1,16 @@
 import { REST, Routes, SlashCommandBuilder } from "discord.js";
 import dotenv from "dotenv";
+import { PLAYER_COUNT } from "../constants.js";
 
 dotenv.config();
 
 const startDraftCommand = new SlashCommandBuilder()
 	.setName("startdraft")
-	.setDescription("Start a League of Legends draft with 10 players");
+	.setDescription(
+		`Start a League of Legends draft with ${PLAYER_COUNT} players`,
+	);
 
-for (let i = 0; i < 10; i++) {
+for (let i = 0; i < PLAYER_COUNT; i++) {
 	startDraftCommand.addUserOption((option) =>
 		option
 			.setName(`player${i + 1}`)

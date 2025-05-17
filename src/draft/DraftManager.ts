@@ -1,17 +1,27 @@
+import { PLAYER_COUNT } from "../constants.js";
 import type { redis } from "../redis.js";
 import { randomUUID } from "node:crypto";
+import type { Player, Draft } from "../types.js";
 
 export class DraftManager {
-	constructor(private redisBridge: RedisBridge) {}
-	public async initDraft({ channelId, guildId, players }: InitDraftArgs) {
-		const exists = await this.redisBridge.getDraft(guildId, channelId);
+	constructor(
+		private redisBridge: RedisBridge,
+		private connect: {
+			guildId: string;
+			channelId: string;
+		},
+	) {}
+
+	private draftKey = `draft:${this.connect.guildId}:${this.connect.channelId}`;
+
+	public async initDraft({ players }: InitDraftArgs) {
+		const exists = await this.redisBridge.getDraft(this.connect);
 		if (exists && exists.phase === "picking")
 			return "draft-already-in-progress";
 
-		if (players.length < 10) return "not-enough-players";
-		// validate players
+		if (players.length < PLAYER_COUNT) return "not-enough-players";
 
-		// Randomly select captains
+		// randomly select captains
 		const shuffled = [...players].sort(() => Math.random() - 0.5);
 		const captains: [Player, Player] = [shuffled[0], shuffled[1]];
 		const remaining = shuffled.slice(2);
@@ -26,8 +36,8 @@ export class DraftManager {
 		];
 
 		const draft: Draft = {
-			guildId,
-			channelId,
+			guildId: this.connect.guildId,
+			channelId: this.connect.channelId,
 			draftId: randomUUID(),
 			players,
 			captains,
@@ -44,13 +54,8 @@ export class DraftManager {
 		return this.redisBridge.saveDraft(draft);
 	}
 
-	public async pickPlayer({
-		captainId,
-		channelId,
-		guildId,
-		playerId,
-	}: PickPlayerArgs) {
-		const draft = await this.redisBridge.getDraft(guildId, channelId);
+	public async pickPlayer({ captainId, playerId }: PickPlayerArgs) {
+		const draft = await this.redisBridge.getDraft(this.connect);
 		if (!draft) return "draft-not-found";
 		if (draft.phase !== "picking") return "draft-not-in-progress";
 
@@ -75,8 +80,8 @@ export class DraftManager {
 		return draft;
 	}
 
-	public async cancelDraft(guildId: string, channelId: string) {
-		const draft = await this.redisBridge.getDraft(guildId, channelId);
+	public async cancelDraft() {
+		const draft = await this.redisBridge.getDraft(this.connect);
 		if (!draft) return "draft-not-found";
 		if (draft.phase !== "picking") return "draft-not-in-progress";
 
@@ -92,12 +97,17 @@ export class RedisBridge {
 		await this.redisInstance.del(getDraftKey(guildId, channelId));
 	}
 
-	public async getDraft(guildId: string, channelId: string) {
+	public async getDraft({
+		channelId,
+		guildId,
+	}: { guildId: string; channelId: string }) {
 		const raw = await this.redisInstance.get(getDraftKey(guildId, channelId));
 		return raw ? (JSON.parse(raw) as Draft) : null;
 	}
 
 	public async saveDraft(draft: Draft) {
+		console.log("Saving draft", JSON.stringify(draft, null, 2));
+
 		await this.redisInstance.set(
 			getDraftKey(draft.guildId, draft.channelId),
 			JSON.stringify(draft),
@@ -109,38 +119,14 @@ export class RedisBridge {
 	}
 }
 
-type Player = {
-	id: string;
-	username: string;
-	mainRole: string;
-	offRole: string;
-};
-
-type Draft = {
-	guildId: string;
-	channelId: string;
-	draftId: string;
-	players: Player[];
-	captains: [Player, Player];
-	teams: Record<string, Player[]>;
-	availablePlayers: Player[];
-	turnOrder: string[]; // array of captainIds
-	currentTurnIndex: number;
-	phase: "picking" | "complete" | "cancelled";
-};
-
 const getDraftKey = (guildId: string, channelId: string) =>
 	`draft:${guildId}:${channelId}`;
 
 type InitDraftArgs = {
-	guildId: string;
-	channelId: string;
 	players: Player[];
 };
 
 type PickPlayerArgs = {
-	guildId: string;
-	channelId: string;
 	captainId: string;
 	playerId: string;
 };
