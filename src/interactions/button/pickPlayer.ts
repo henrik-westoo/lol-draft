@@ -26,6 +26,10 @@ export const pickPlayer = async (
 				return interaction.reply({
 					content: "❌ Player is not available.",
 				});
+			case "invalid-captain-turn":
+				return interaction.reply({
+					content: "❌ It's not your turn.",
+				});
 		}
 	}
 

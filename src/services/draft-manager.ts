@@ -70,7 +70,7 @@ export class DraftManager {
 
 		const expectedCaptain = draft.turnOrder[draft.currentTurnIndex];
 
-		if (captainId !== expectedCaptain) "invalid-captain-turn";
+		if (captainId !== expectedCaptain) return "invalid-captain-turn";
 
 		const player = draft.availablePlayers.find((p) => p.id === playerId);
 		if (!player) return "player-not-available";
