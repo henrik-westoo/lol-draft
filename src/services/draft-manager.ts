@@ -42,6 +42,8 @@ export class DraftManager {
 			captains[0].id,
 			captains[0].id,
 			captains[1].id,
+			captains[1].id,
+			captains[0].id,
 		];
 
 		const draft: Draft = {
@@ -81,9 +83,8 @@ export class DraftManager {
 		);
 		draft.currentTurnIndex++;
 
-		if (draft.currentTurnIndex >= draft.turnOrder.length) {
+		if (draft.currentTurnIndex >= draft.turnOrder.length)
 			draft.phase = "complete";
-		}
 
 		await this.draftRepository.save(draft);
 		return draft;
