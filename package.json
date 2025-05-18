@@ -10,7 +10,7 @@
 		"rebuild": "npm run clean && npm run build",
 		"test": "vitest",
 		"start": "node dist/server.js",
-		"support": "cd ./docker && docker compose up -d redis",
+		"support": "cd ./docker && docker compose up -d --remove-orphans redis",
 		"dev": "npm run support && nodemon"
 	},
 	"keywords": [],
