@@ -1,11 +1,10 @@
 import { Client, GatewayIntentBits } from "discord.js";
 import dotenv from "dotenv";
 import { DraftManager } from "./services/draft-manager.js";
-import { CHAT_INPUT_COMMANDS } from "./interactions/chat-input/index.js";
-import { readButtonId } from "./utils/button-id.js";
 import { DraftRepository } from "./repositories/draft-repository.js";
-import { BUTTON_COMMANDS } from "./interactions/button/index.js";
 import { registerCommands } from "./registerCommands.js";
+import { chatInputCommandHandler } from "./handlers/chat-input-command-handler.js";
+import { buttonCommandHandler } from "./handlers/button-handler.js";
 
 dotenv.config();
 // import redis after setting up dotenv
@@ -29,7 +28,13 @@ client.once("ready", (readyClient) => {
 	console.log(`🤖 Logged in as ${readyClient.user.tag}`);
 });
 
+const busyChannels = new Set<string>(); // channel IDs with ongoing requests
+
 client.on("interactionCreate", async (interaction) => {
+	console.log(
+		`🔔 Interaction: ${interaction.type}, issued by ${interaction.user.globalName} (${interaction.user.id})`,
+	);
+
 	if (!interaction.isChatInputCommand() && !interaction.isButton()) {
 		console.log(
 			`❌ Unknown interaction type: ${interaction.type}`,
@@ -43,42 +48,38 @@ client.on("interactionCreate", async (interaction) => {
 			content: "This command can only be used in a server.",
 		});
 
+	if (busyChannels.has(interaction.channelId)) {
+		console.log(
+			`❌ Interaction was blocked in channel ${interaction.channelId}`,
+			interaction.toString(),
+		);
+
+		return interaction.reply({
+			content:
+				"Another interaction is being processed in this channel. Please wait.",
+		});
+	}
+
+	busyChannels.add(interaction.channelId);
+
 	const draftManager = new DraftManager(new DraftRepository(redis), {
 		channelId: interaction.channelId,
 		guildId: interaction.guildId,
 	});
 
-	if (interaction.isChatInputCommand()) {
-		console.log(
-			`📜 Chat command: ${interaction.commandName}, issued by ${interaction.user.globalName}`,
-		);
-		switch (interaction.commandName) {
-			case "startdraft":
-				return CHAT_INPUT_COMMANDS.startDraft(interaction, draftManager);
-			case "canceldraft":
-				return CHAT_INPUT_COMMANDS.cancelDraft(interaction, draftManager);
-			default:
-				return interaction.reply({
-					content: `Unknown command: ${interaction.commandName}`,
-				});
+	switch (true) {
+		case interaction.isChatInputCommand(): {
+			await chatInputCommandHandler(interaction, draftManager);
+			break;
+		}
+		case interaction.isButton(): {
+			await buttonCommandHandler(interaction, draftManager);
+			break;
 		}
 	}
-	if (interaction.isButton()) {
-		const { prefix, id } = readButtonId(interaction.customId);
 
-		console.log(
-			`🔘 Button command: ${prefix}, issued by ${interaction.user.globalName}`,
-		);
-
-		switch (prefix) {
-			case "pick":
-				return BUTTON_COMMANDS.pickPlayer(interaction, draftManager, id);
-			default:
-				return interaction.reply({
-					content: `Unknown button command: ${interaction.customId}`,
-				});
-		}
-	}
+	busyChannels.delete(interaction.channelId);
+	return;
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
