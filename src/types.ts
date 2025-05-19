@@ -1,6 +1,7 @@
 export type Player = {
 	id: string;
 	name: string;
+	roles: string[];
 };
 
 export type Draft = {

@@ -37,7 +37,7 @@ export const buttonCommandHandler = async (
 						break;
 				}
 
-				return interaction.followUp({
+				return interaction.reply({
 					content: errorMsg,
 					flags: MessageFlags.Ephemeral,
 				});

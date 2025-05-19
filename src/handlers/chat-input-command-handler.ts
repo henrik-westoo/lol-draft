@@ -2,6 +2,13 @@ import { MessageFlags, type ChatInputCommandInteraction } from "discord.js";
 import type { DraftManager } from "../services/draft-manager";
 import { buildDraftEmbed, buildPlayerButtons } from "../ui/ui.js";
 
+const roles = ["top", "jungle", "mid", "adc", "support"] as const;
+type Role = (typeof roles)[number];
+
+const mapToLolRole = (role: string) => {
+	if (roles.includes(role.toLowerCase() as any)) return role as Role;
+};
+
 export const chatInputCommandHandler = async (
 	interaction: ChatInputCommandInteraction,
 	draftManager: DraftManager,
@@ -26,6 +33,13 @@ export const chatInputCommandHandler = async (
 					return {
 						id: option.user!.id,
 						name: option.user!.globalName!,
+						roles: Array.isArray(option.member!.roles)
+							? option
+									.member!.roles.map((role) => mapToLolRole(role))
+									.filter((role): role is Role => !!role)
+							: option
+									.member!.roles.cache.map((role) => mapToLolRole(role.name))
+									.filter((role): role is Role => !!role),
 					};
 				}),
 			});

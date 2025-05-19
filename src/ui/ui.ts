@@ -9,7 +9,9 @@ import { createButtonId } from "../utils/button-id.js";
 
 const formatPlayer = (player: {
 	name: string;
-}) => `• **${player.name}**`;
+	roles: string[];
+}) =>
+	`• ${player.name} ${player.roles.length > 0 ? `(${player.roles.join(", ")})` : ""}`;
 
 export function buildDraftEmbed(draft: Draft) {
 	const embed = new EmbedBuilder()
@@ -19,13 +21,16 @@ export function buildDraftEmbed(draft: Draft) {
 	const teamA = draft.teams[draft.captains[0].id] || [];
 	const teamB = draft.teams[draft.captains[1].id] || [];
 
+	const captain1 = draft.captains[0];
+	const captain2 = draft.captains[1];
+
 	const teamAList = [
-		`👑 **Captain**: ${draft.captains[0].name}`,
+		`👑 **${captain1.name}** ${captain1.roles.length > 0 ? `(${captain1.roles.join(", ")})` : ""}  `,
 		...teamA.map(formatPlayer),
 	].join("\n");
 
 	const teamBList = [
-		`👑 **Captain**: ${draft.captains[1].name}`,
+		`👑 **${captain2.name}** ${captain2.roles.length > 0 ? `(${captain2.roles.join(", ")})` : ""}`,
 		...teamB.map(formatPlayer),
 	].join("\n");
 

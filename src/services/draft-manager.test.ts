@@ -7,6 +7,7 @@ import { DraftManager } from "./draft-manager";
 const makePlayer = (id: string): Player => ({
 	id,
 	name: `Player${id}`,
+	roles: [],
 });
 
 const mockConnect = {
