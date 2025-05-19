@@ -31,6 +31,10 @@ client.once("ready", (readyClient) => {
 const busyChannels = new Set<string>(); // channel IDs with ongoing requests
 
 client.on("interactionCreate", async (interaction) => {
+	console.log(
+		`🔔 Interaction: ${interaction.type}, issued by ${interaction.user.globalName} (${interaction.user.id})`,
+	);
+
 	if (!interaction.isChatInputCommand() && !interaction.isButton()) {
 		console.log(
 			`❌ Unknown interaction type: ${interaction.type}`,
@@ -46,13 +50,13 @@ client.on("interactionCreate", async (interaction) => {
 
 	if (busyChannels.has(interaction.channelId)) {
 		console.log(
-			`❌ Request was blocked in channel ${interaction.channelId}`,
+			`❌ Interaction was blocked in channel ${interaction.channelId}`,
 			interaction.toString(),
 		);
 
 		return interaction.reply({
 			content:
-				"Another request is being processed in this channel. Please wait.",
+				"Another interaction is being processed in this channel. Please wait.",
 		});
 	}
 
