@@ -44,11 +44,17 @@ client.on("interactionCreate", async (interaction) => {
 			content: "This command can only be used in a server.",
 		});
 
-	if (busyChannels.has(interaction.channelId))
+	if (busyChannels.has(interaction.channelId)) {
+		console.log(
+			`❌ Request was blocked in channel ${interaction.channelId}`,
+			interaction.toString(),
+		);
+
 		return interaction.reply({
 			content:
 				"Another request is being processed in this channel. Please wait.",
 		});
+	}
 
 	busyChannels.add(interaction.channelId);
 

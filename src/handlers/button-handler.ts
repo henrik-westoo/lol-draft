@@ -15,49 +15,46 @@ export const buttonCommandHandler = async (
 
 	switch (prefix) {
 		case "pick": {
-			await interaction.deferUpdate();
-			await interaction.deferReply({
-				flags: MessageFlags.Ephemeral,
-			});
-
 			const pickPlayerResponse = await draftManager.pickPlayer({
 				captainId: interaction.user.id,
 				playerId: id,
 			});
 
 			if (typeof pickPlayerResponse === "string") {
+				let errorMsg = "❌ ";
 				switch (pickPlayerResponse) {
 					case "draft-not-found":
-						return interaction.editReply({
-							content: "❌ Draft not found.",
-						});
+						errorMsg += "Draft not found.";
+						break;
 					case "draft-not-in-progress":
-						return interaction.editReply({
-							content: "❌ Draft is not in progress.",
-						});
+						errorMsg += "Draft is not in progress.";
+						break;
 					case "player-not-available":
-						return interaction.editReply({
-							content: "❌ Player is not available.",
-						});
+						errorMsg += "Player is not available.";
+						break;
 					case "invalid-captain-turn":
-						return interaction.editReply({
-							content:
-								"❌ Invalid action. Either you are not the captain or it is not your turn.",
-						});
+						errorMsg += "You're not the captain or it's not your turn.";
+						break;
 				}
+
+				return interaction.followUp({
+					content: errorMsg,
+					flags: MessageFlags.Ephemeral,
+				});
 			}
 
 			const playerName =
-				pickPlayerResponse!.turnOrder[pickPlayerResponse!.currentTurnIndex];
+				pickPlayerResponse.turnOrder[pickPlayerResponse.currentTurnIndex];
 
 			return interaction.update({
 				content: playerName
 					? `<@${playerName}>, your turn!`
 					: "All done! Thank you for using donger-draft.",
-				embeds: [buildDraftEmbed(pickPlayerResponse!)],
-				components: buildPlayerButtons(pickPlayerResponse!.availablePlayers),
+				embeds: [buildDraftEmbed(pickPlayerResponse)],
+				components: buildPlayerButtons(pickPlayerResponse.availablePlayers),
 			});
 		}
+
 		default:
 			return interaction.editReply({
 				content: `Unknown button command: ${interaction.customId}`,

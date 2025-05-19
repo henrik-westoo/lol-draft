@@ -12,13 +12,12 @@ export const chatInputCommandHandler = async (
 
 	switch (interaction.commandName) {
 		case "startdraft": {
-			await interaction.deferReply({ flags: MessageFlags.Ephemeral });
-
 			// bots dont have globalName
 			if (interaction.options.data.some((option) => !option.user?.globalName)) {
-				return interaction.editReply({
+				return interaction.reply({
 					content:
 						"❌ One user is missing globalName, cannot start draft. Maybe the user was a bot?",
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 
@@ -45,12 +44,13 @@ export const chatInputCommandHandler = async (
 						msg += "Duplicate players.";
 						break;
 				}
-				return interaction.editReply({
+				return interaction.reply({
 					content: msg,
+					flags: MessageFlags.Ephemeral,
 				});
 			}
 
-			return interaction.editReply({
+			return interaction.reply({
 				embeds: [buildDraftEmbed(initDraftResponse)],
 				content: `<@${initDraftResponse.turnOrder[initDraftResponse.currentTurnIndex]}>, your turn to pick!`,
 				components: buildPlayerButtons(initDraftResponse.availablePlayers),
